@@ -357,6 +357,9 @@ async function refreshStatus() {
 }
 
 async function main() {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").catch(() => { /* still works without */ });
+  }
   initModal();
   initModeToggle();
   $("search").addEventListener("input", render);
