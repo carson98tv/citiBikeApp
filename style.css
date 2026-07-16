@@ -65,6 +65,35 @@ h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: .01em; }
 
 #search:focus { border-color: var(--accent); }
 
+.modewrap {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 10px;
+}
+
+.modebtn {
+  flex: 1;
+  font-size: .95rem;
+  font-weight: 600;
+  padding: 11px 8px;
+  border-radius: 12px;
+  border: 1px solid #263453;
+  background: var(--card);
+  color: var(--dim);
+  cursor: pointer;
+}
+
+.modebtn.selected {
+  border-color: var(--accent);
+  color: var(--text);
+  background: #16233d;
+}
+
+.badges .key {
+  font-weight: 700;
+  filter: brightness(1.25);
+}
+
 .sectionlabel {
   padding: 8px 20px 4px;
   font-size: .75rem;

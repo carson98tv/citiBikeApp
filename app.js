@@ -12,6 +12,7 @@ const LS = {
   mapsApp: "csl.mapsApp",
   stations: "csl.stations",
   recents: "csl.recents",
+  mode: "csl.mode", // "pickup" (walk there) | "dropoff" (ride there)
 };
 
 const $ = (id) => document.getElementById(id);
@@ -156,14 +157,19 @@ function watchLocation() {
 
 // ---------- navigation deep links ----------
 
+function getMode() {
+  return lsGet(LS.mode) === "pickup" ? "pickup" : "dropoff";
+}
+
 function navUrl(station) {
   const app = lsGet(LS.mapsApp) || "google";
+  const walking = getMode() === "pickup"; // walk to grab a bike, ride to drop off
   const lat = Number(station.lat), lon = Number(station.lon);
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return "#";
   if (app === "apple") {
-    return `https://maps.apple.com/?daddr=${lat},${lon}&dirflg=c`;
+    return `https://maps.apple.com/?daddr=${lat},${lon}&dirflg=${walking ? "w" : "c"}`;
   }
-  return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}&travelmode=bicycling`;
+  return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}&travelmode=${walking ? "walking" : "bicycling"}`;
 }
 
 function recordRecent(id) {
@@ -207,13 +213,14 @@ function stationRow(s) {
   const badges = document.createElement("div");
   badges.className = "badges";
   if (st && st.active) {
-    for (const [cls, text] of [
-      [badgeClass(st.bikes), `🚲 ${st.bikes}`],
-      [badgeClass(st.ebikes), `⚡ ${st.ebikes}`],
-      [badgeClass(st.docks), `🅿 ${st.docks} docks`],
+    const pickup = getMode() === "pickup";
+    for (const [cls, text, key] of [
+      [badgeClass(st.bikes), `🚲 ${st.bikes}`, pickup],
+      [badgeClass(st.ebikes), `⚡ ${st.ebikes}`, pickup],
+      [badgeClass(st.docks), `🅿 ${st.docks} docks`, !pickup],
     ]) {
       const span = document.createElement("span");
-      span.className = cls;
+      span.className = key ? `${cls} key` : cls;
       span.textContent = text;
       badges.appendChild(span);
     }
@@ -289,7 +296,29 @@ function renderStatusLine() {
   const secs = Math.round((Date.now() - statusFetchedAt) / 1000);
   const ago = secs < 5 ? "just now" : secs < 90 ? `${secs}s ago` : `${Math.round(secs / 60)}m ago`;
   const app = (lsGet(LS.mapsApp) || "google") === "apple" ? "Apple Maps" : "Google Maps";
-  el.textContent = `Availability updated ${ago} · opens ${app}`;
+  const trip = getMode() === "pickup" ? "walking directions" : "cycling directions";
+  el.textContent = `Updated ${ago} · ${trip} via ${app}`;
+}
+
+// ---------- mode toggle ----------
+
+function updateModeButtons() {
+  const mode = getMode();
+  for (const btn of document.querySelectorAll(".modebtn")) {
+    btn.classList.toggle("selected", btn.dataset.mode === mode);
+    btn.setAttribute("aria-checked", String(btn.dataset.mode === mode));
+  }
+}
+
+function initModeToggle() {
+  for (const btn of document.querySelectorAll(".modebtn")) {
+    btn.addEventListener("click", () => {
+      lsSet(LS.mode, btn.dataset.mode);
+      updateModeButtons();
+      render();
+    });
+  }
+  updateModeButtons();
 }
 
 // ---------- settings modal ----------
@@ -329,6 +358,7 @@ async function refreshStatus() {
 
 async function main() {
   initModal();
+  initModeToggle();
   $("search").addEventListener("input", render);
   $("refreshBtn").addEventListener("click", refreshStatus);
   document.addEventListener("visibilitychange", () => {
