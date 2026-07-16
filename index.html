@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src https://gbfs.lyft.com https://gbfs.citibikenyc.com; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Station Launcher</title>
+<meta name="description" content="Type a Citi Bike station, tap it, start navigating.">
+<meta name="theme-color" content="#0b1220">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Stations">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>Station Launcher</h1>
+  <button id="settingsBtn" class="iconbtn" aria-label="Settings">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
+</header>
+
+<div class="searchwrap">
+  <input id="search" type="search" placeholder="Type station… e.g. w52, 1av"
+         autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+</div>
+
+<div id="recents" class="recents" hidden>
+  <div class="sectionlabel">Recent</div>
+  <div id="recentChips" class="chips"></div>
+</div>
+
+<div id="listLabel" class="sectionlabel"></div>
+<ul id="results"></ul>
+
+<footer>
+  <span id="statusLine">Loading stations…</span>
+  <button id="refreshBtn" class="iconbtn" aria-label="Refresh availability">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+  </button>
+</footer>
+
+<div id="modal" class="modal" hidden>
+  <div class="sheet">
+    <h2>Navigate with…</h2>
+    <p class="hint">Tapping a station opens cycling directions here.</p>
+    <label class="choice"><input type="radio" name="mapsApp" value="google"> Google Maps</label>
+    <label class="choice"><input type="radio" name="mapsApp" value="apple"> Apple Maps</label>
+    <button id="modalDone" class="primary" disabled>Done</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
